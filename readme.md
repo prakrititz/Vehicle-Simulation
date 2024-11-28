@@ -34,6 +34,17 @@ A sophisticated traffic simulation system that models electric vehicles (EVs) na
 - Maven
 - Modern web browser (for GUI version)
 
+### System Configuration
+
+1. Add the DLL to System Path:
+   - Copy `dijkstra_jni.dll` from `Vehicle-Simulation/lib` to a known location
+   - Add the DLL directory to your system's PATH environment variable:
+     - Windows:
+       - Open System Properties > Advanced > Environment Variables
+       - Add the DLL directory path to the PATH variable
+     - Linux/Mac:
+       - Add to LD_LIBRARY_PATH: `export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/path/to/dll`
+
 ### Running the Application
 
 1. Clone the repository:
