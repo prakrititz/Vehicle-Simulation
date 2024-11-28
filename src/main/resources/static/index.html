@@ -146,7 +146,7 @@
                 evElement.innerHTML = `
             <h4>${sprite.name}</h4>
             <p>Position: (${Math.floor(sprite.x / CELL_SIZE)}, ${Math.floor(sprite.y / CELL_SIZE)})</p>
-            <p>Charge: ${sprite.chargeText.text}</p>
+            
         `;
                 evList.appendChild(evElement);
             });
@@ -188,8 +188,8 @@
                         if (!sprite) {
                             sprite = scene.add.sprite(targetX, targetY, `${ev.vehicleType}_${ev.currentDirection}`)
                                 .setDisplaySize(32, 32);
-                            sprite.chargeText = scene.add.text(targetX, targetY + CELL_SIZE,
-                                `${ev.charge}%`, { fontSize: '12px', fill: '#fff' }).setOrigin(0.5);
+                           /* sprite.chargeText = scene.add.text(targetX, targetY + CELL_SIZE,
+                                `${ev.charge}%`, { fontSize: '12px', fill: '#fff' }).setOrigin(0.5); */
                             evSprites[ev.name] = sprite;
                             sprite.setInteractive();
                             sprite.on('pointerdown', () => {
@@ -210,7 +210,7 @@
                                 ease: 'Linear'
                             });
                         }
-                        sprite.chargeText.setText(`${ev.charge}%`);
+                        /*sprite.chargeText.setText(`${ev.charge}%`);*/
                     });
                 })
                 .catch(error => console.error('Error fetching EV data:', error));
