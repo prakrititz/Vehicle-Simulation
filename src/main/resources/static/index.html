@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Vehicle Traffic Simulation</title>
+    <script src="https://cdn.jsdelivr.net/npm/phaser@3.55.2/dist/phaser.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/stompjs@2.3.3/lib/stomp.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=VT323&family=Orbitron:wght@400;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+    <div class="container">
+        <div class="sidebar">
+            <div>
+                <div class="title">Traffic Sim</div>
+                <div class="subtitle">Vehicle Dynamics</div>
+
+                <div class="team-info">
+                    <div class="team-title">Radiant Se7en</div>
+                    <div class="team-members">
+                        Unnath Chittimalla<br>
+                        Areen Patil<br>
+                        Ansh Gupta<br>
+                        Prakrititz Borah<br>
+                        Yash Gupta<br>
+                        Hrushikesh Sawant<br>
+                        Satyam Dewangan
+                    </div>
+                </div>
+                <div class="project-info">
+                    <h3>About Project</h3>
+                    <p> Vehicle Traffic Simulation developed at IIIT Bangalore 2024. Features real-time traffic management, autonomous vehicle routing, and dynamic traffic signal optimization.</p>
+                    
+                    <div class="tech-stack">
+                        <span class="tech-badge">C++</span>
+                        <span class="tech-badge">Java</span>
+                        <span class="tech-badge">Spring Boot</span>
+                        <span class="tech-badge">Maven</span>
+                        <span class="tech-badge">Phaser.js</span>
+                        <span class="tech-badge">WebSocket</span>
+                    </div>
+                    
+                    <div class="features">
+                        <p>• Real-time Vehicle Tracking</p>
+                        <p>• Smart Traffic Management</p>
+                        <p>• Dynamic Path Finding</p>
+                        <p>• Multi-vehicle Support</p>
+                    </div>
+                </div>
+                
+                
+            </div>
+            <div class="ev-creator">
+                <h3>Create New EV</h3>
+                <form id="evForm">
+                    <div class="form-group">
+                        <label>Start X: <input type="number" id="startX" required></label>
+                        <label>Start Y: <input type="number" id="startY" required></label>
+                    </div>
+                    <div class="form-group">
+                        <label>End X: <input type="number" id="endX" required></label>
+                        <label>End Y: <input type="number" id="endY" required></label>
+                    </div>
+                    <button type="submit" class="create-btn">Launch EV</button>
+                    <button id="spawn-npcs" class="btn btn-primary">Spawn NPCs</button>
+                    <div class="form-group">
+                        <label>Vehicle Type:
+                            <select id="vehicleType" required>
+                                <option value="ambulance">Ambulance</option>
+                                <option value="bus">Bus</option>
+                                <option value="coupe">Coupe</option>
+                                <option value="ev">EV</option>
+                                <option value="hatchback">Hatchback</option>
+                                <option value="luxury">Luxury</option>
+                                <option value="pickup">Pickup</option>
+                                <option value="sedan">Sedan</option>
+                                <option value="sport">Sport</option>
+                                <option value="super">Super</option>
+                                <option value="suv">SUV</option>
+                                <option value="van">Van</option>
+                            </select>
+                        </label>
+                    </div>
+
+                </form>
+
+            </div>
+
+            <div class="active-evs">
+                <h3>Active Vehicles</h3>
+                <div id="active-evs-list"></div>
+            </div>
+
+            <div class="credits">
+                © 2024 Radiant Se7en Technologies
+            </div>
+        </div>
+
+        <div class="game-area" id="game-container">
+            <!-- Phaser game will be inserted here -->
+        </div>
+    </div>
+
+    <script>
+        const config = {
+            type: Phaser.AUTO,
+            width: 1152,  // 36 * 32
+            height: 1152, // 36 * 32
+            parent: 'game-container',
+            scene: {
+                preload: preload,
+                create: create
+            },
+            pixelArt: true
+        };
+
+        const game = new Phaser.Game(config);
+        const CELL_SIZE = 32;
+        const evSprites = {};
+        const trafficLightSprites = {};
+        function preload() {
+            this.load.image('background', 'map.png');
+            this.load.image('redLight', 'trafficLights/red.png');
+            this.load.image('greenLight', 'trafficLights/green.png');
+            const vehicleTypes = ['ambulance', 'bus', 'coupe', 'ev', 'hatchback', 'luxury',
+                'pickup', 'sedan', 'sport', 'super', 'suv', 'van'];
+
+            vehicleTypes.forEach(type => {
+                this.load.image(`${type}_left`, `./vehicles/${type}/left.png`);
+                this.load.image(`${type}_right`, `./vehicles/${type}/right.png`);
+                this.load.image(`${type}_up`, `./vehicles/${type}/top.png`);
+                this.load.image(`${type}_down`, `./vehicles/${type}/down.png`);
+            });
+        }
+
+        function updateEVList() {
+            const evList = document.getElementById('active-evs-list');
+            evList.innerHTML = ''; // Clear current list
+
+            Object.values(evSprites).forEach(sprite => {
+                const evElement = document.createElement('div');
+                evElement.className = 'ev-item';
+                evElement.innerHTML = `
+            <h4>${sprite.name}</h4>
+            <p>Position: (${Math.floor(sprite.x / CELL_SIZE)}, ${Math.floor(sprite.y / CELL_SIZE)})</p>
+            <p>Charge: ${sprite.chargeText.text}</p>
+        `;
+                evList.appendChild(evElement);
+            });
+        }
+
+        function updateEVPositions() {
+            fetch('api/ev/all')
+                .then(response => response.json())
+                .then(evs => {
+                    const scene = game.scene.scenes[0];
+
+                    Object.keys(evSprites).forEach(evName => {
+                        if (!evs.find(ev => ev.name === evName)) {
+                            evSprites[evName].destroy();
+                            evSprites[evName].chargeText.destroy();
+                            delete evSprites[evName];
+                        }
+                    });
+
+                    const evList = document.getElementById('active-evs-list');
+                    evList.innerHTML = '';
+
+                    evs.forEach(ev => {
+                        const x = ev.currentY - 1;
+                        const y = ev.currentX - 1;
+                        let sprite = evSprites[ev.name];
+                        const targetX = x * CELL_SIZE + CELL_SIZE / 2;
+                        const targetY = y * CELL_SIZE + CELL_SIZE / 2;
+
+                        const evElement = document.createElement('div');
+                        evElement.className = 'ev-item';
+                        evElement.innerHTML = `
+                    <strong>${ev.name}</strong>
+                    <p>Position: (${ev.currentX}, ${ev.currentY})</p>
+                    <p>Charge: ${ev.charge}%</p>
+                `;
+                        evList.appendChild(evElement);
+
+                        if (!sprite) {
+                            sprite = scene.add.sprite(targetX, targetY, `${ev.vehicleType}_${ev.currentDirection}`)
+                                .setDisplaySize(32, 32);
+                            sprite.chargeText = scene.add.text(targetX, targetY + CELL_SIZE,
+                                `${ev.charge}%`, { fontSize: '12px', fill: '#fff' }).setOrigin(0.5);
+                            evSprites[ev.name] = sprite;
+                            sprite.setInteractive();
+                            sprite.on('pointerdown', () => {
+                                showEVDetails(ev);
+                            });
+                        } else {
+                            sprite.setTexture(`${ev.vehicleType}_${ev.currentDirection}`);
+
+                            if (sprite.popup) {
+                                sprite.popup.setPosition(targetX, targetY);
+                            }
+
+                            scene.tweens.add({
+                                targets: [sprite, sprite.chargeText],
+                                x: targetX,
+                                y: { value: (target) => target === sprite ? targetY : targetY + CELL_SIZE },
+                                duration: 1000,
+                                ease: 'Linear'
+                            });
+                        }
+                        sprite.chargeText.setText(`${ev.charge}%`);
+                    });
+                })
+                .catch(error => console.error('Error fetching EV data:', error));
+        }
+
+
+
+        function showEVDetails(ev) {
+            const scene = game.scene.scenes[0];
+
+            // Remove existing popup for this EV if it exists
+            if (evSprites[ev.name].popup) {
+                evSprites[ev.name].popup.destroy();
+            }
+
+            const popup = scene.add.container(ev.currentY * CELL_SIZE, ev.currentX * CELL_SIZE);
+            evSprites[ev.name].popup = popup;
+
+            const bg = scene.add.rectangle(0, 0, 200, 120, 0x000000, 0.8);
+            const closeButton = scene.add.text(80, -50, 'X', {
+                fontSize: '16px',
+                fill: '#fff',
+                backgroundColor: '#ff0000',
+                padding: { x: 5, y: 2 }
+            });
+            const text = scene.add.text(-90, -50,
+                `Name: ${ev.name}\n` +
+                `Type: ${ev.type}\n` +
+                `Position: (${ev.currentX}, ${ev.currentY})\n` +
+                `Destination: (${ev.endX}, ${ev.endY})\n` +
+                `Charge: ${ev.charge}%`,
+                { fontSize: '14px', fill: '#fff' }
+            );
+
+            popup.add([bg, text, closeButton]);
+
+            closeButton.setInteractive();
+            closeButton.on('pointerdown', () => {
+                popup.destroy();
+                delete evSprites[ev.name].popup;
+            });
+        }
+        function updateTrafficLights() {
+            fetch('api/ev/traffic/signals')
+                .then(response => response.json())
+                .then(lights => {
+                    const scene = game.scene.scenes[0];
+
+                    lights.forEach(light => {
+                        const x = light.y - 1;
+                        const y = light.x - 1;
+                        let sprite = trafficLightSprites[`${x},${y}`];
+                        const targetX = x * CELL_SIZE + CELL_SIZE / 2;
+                        const targetY = y * CELL_SIZE + CELL_SIZE / 2;
+
+                        if (!sprite) {
+                            sprite = scene.add.sprite(targetX, targetY,
+                                light.isGreen ? 'greenLight' : 'redLight')
+                                .setDisplaySize(30, 50)
+                                .setDepth(2); // Ensures traffic lights appear above EVs
+                            trafficLightSprites[`${x},${y}`] = sprite;
+                        } else {
+                            sprite.setTexture(light.isGreen ? 'greenLight' : 'redLight');
+                        }
+                    });
+                });
+        }
+
+        function create() {
+            this.add.image(0, 0, 'background').setOrigin(0, 0);
+
+            // Start periodic updates
+            setInterval(updateEVPositions, 250); // Update every second
+            setInterval(updateTrafficLights, 250);
+        }
+    </script>
+
+    <script>
+        document.getElementById('evForm').addEventListener('submit', function (e) {
+            e.preventDefault();
+            const evData = {
+                name: `EV${Date.now()}`,
+                startX: parseInt(document.getElementById('startX').value),
+                startY: parseInt(document.getElementById('startY').value),
+                endX: parseInt(document.getElementById('endX').value),
+                endY: parseInt(document.getElementById('endY').value),
+                vehicleType: document.getElementById('vehicleType').value,
+                charge: 100,
+                chargingRate: 10
+            };
+
+            fetch('/api/ev/new', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(evData)
+            })
+                .then(response => response.json())
+                .then(data => {
+                    console.log('EV created:', data);
+                    this.reset();
+                });
+        });
+
+        document.getElementById('spawn-npcs').addEventListener('click', function () {
+            fetch('/api/ev/npc/spawn', {
+                method: 'POST'
+            })
+                .then(response => response.json())
+                .then(npcs => {
+                    //this.disabled = true;
+                });
+        });
+    </script>
+</body>
+
+</html>
