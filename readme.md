@@ -1,51 +1,46 @@
-# Project Title
+# 🚗 Smart Vehicle Traffic Simulation
 
-## Overview
+A sophisticated traffic simulation system that models electric vehicles (EVs) navigating through a dynamic traffic network with intelligent pathfinding and traffic signal management.
 
-This project is designed to [briefly describe the purpose of the project]. It aims to [explain the main functionality or goal of the project].
+![Vehicle Simulation Demo](demo.gif)
 
-## Demo
+## ✨ Features
 
-![Demo](demo.gif)
+- **Real-time EV Simulation**
 
-## Features
+  - Dynamic vehicle movement
+  - Battery charge monitoring
+  - Intelligent charging system
+  - Multiple vehicle types support
 
-- Feature 1: [Description of feature 1]
-- Feature 2: [Description of feature 2]
-- Feature 3: [Description of feature 3]
+- **Traffic Management**
 
-## Installation
+  - Adaptive traffic signals
+  - Collision prevention
+  - Smart pathfinding using native algorithms
+  - Interactive traffic node system
 
-To get started with this project, follow these steps:
+- **Visualization**
+  - Web-based GUI using Phaser.js
+  - Terminal-based visualization option
+  - Real-time position tracking
+  - Traffic signal status display
+
+## 🚀 Getting Started
+
+### Prerequisites
+
+- Java 17 or higher
+- Maven
+- Modern web browser (for GUI version)
+
+### Running the Application
 
 1. Clone the repository:
 
-   git clone [repository-url]
-
-2. Navigate to the project directory:
-
-   cd [project-directory]
-
-3. Install the necessary dependencies:
-
-   [installation command]
-
-## Usage
-
-To run the project, use the following command:
-
-[run command]
-
-## Contributing
-
-If you would like to contribute to this project, please fork the repository and submit a pull request.
-
-## License
-
-This project is licensed under the [license name]. See the LICENSE file for more details.
-
-## Acknowledgments
-
-- [Acknowledgment 1]
-- [Acknowledgment 2]
-- [Acknowledgment 3]
+```bash
+git clone https://github.com/yourusername/smart-vehicle-simulation.git
+cd smart-vehicle-simulation
+mvn clean install
+mvn spring-boot:run
+```
