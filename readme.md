@@ -91,7 +91,12 @@ mvn spring-boot:run
 ## 📈 Performance Metrics
 - **Simulation Accuracy**: 95% traffic flow prediction
 - **Real-time Processing**: Sub-millisecond computational latency
-- **Scalability**: Supports up to 10,000 concurrent vehicle simulations
+- **Scalability**: Supports up to 1000 concurrent vehicle simulations
+
+
+
+https://github.com/user-attachments/assets/073c12e7-d422-4156-b8f0-c6dda302b788
+
 
 ## 🤝 Contributing
 Contributions are welcome! Please read our contributing guidelines and code of conduct.
