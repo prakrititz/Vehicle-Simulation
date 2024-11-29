@@ -56,6 +56,357 @@ The simulation leverages a sophisticated computational model that combines:
 - Eases the process of creating customized maps
 - Edit existing maps, or make new ones! 
 
+### Diagrams
+```mermaid
+classDiagram
+    class GameMap {
+        -static GameMap instance
+        -int width
+        -int height
+        -Map<String, Node> roadNetwork
+        -RoadMapParser roadMapParser
+        
+        +GameMap()
+        -loadMap(String filename, String signalMapPath) void
+        +static getInstance() GameMap
+        +isWalkable(int x, int y) boolean
+        +getObstacleMap() boolean[][]
+        +getWidth() int
+        +getHeight() int
+        +printMap() void
+        +getRoadNode(int x, int y) Node
+        +getTrafficNode(int x, int y) TrafficNode
+        +getRoadNetwork() Map
+        +printRoadNetwork() void
+        +findReachableNodes(int x, int y) Set
+    }
+
+    class EVController {
+        -Map<String, EV> evMap
+        -PathfindingVisualizer pathfinder
+        -TrafficManager trafficManager
+        
+        +EVController()
+        +getEvMap() Map
+        +newEV(EVCreateRequest request) ResponseEntity
+        +canMoveToPosition(String evName, int x, int y) ResponseEntity
+        +getAllEVs() ResponseEntity
+        +startEV(String evName) ResponseEntity
+        +deleteEV(String evName) ResponseEntity
+        +updateEVPosition(String evName) ResponseEntity
+        +getEVStatus(String evName) ResponseEntity
+        -convertToPathNodes(long[] path) List
+        +getTrafficSignals() ResponseEntity
+        +changeTrafficSignals() ResponseEntity
+    }
+
+    class EV {
+        -String name
+        -int startX
+        -int startY
+        -int endX
+        -int endY
+        -int type
+        -int charge
+        -int chargingRate
+        -List<PathNode> path
+        +int currentPathIndex
+        -boolean moving
+        +Task task
+        -static final long MOVE_INTERVAL
+        +Queue<Task> taskQueue
+        
+        +EV(int x, int y, int type, int charge, int chargingRate)
+        +getName() String
+        +setName(String name) void
+        +getStartX() int
+        +getStartY() int
+        +getEndX() int
+        +getEndY() int
+        +getType() int
+        +getCharge() int
+        +setPath(List<PathNode> path) void
+        +getPath() List<PathNode>
+        +getCurrentPathIndex() int
+        +getMoveInterval() long
+        +moveToNextPosition() void
+        +setEndLocation(int endX, int endY) void
+        +charge() void
+        +fullCharge() boolean
+        +getCurrentX() int
+        +getCurrentY() int
+        +isMoving() boolean
+        +setMoving(boolean moving) void
+        +getTask() void
+    }
+
+    class TrafficManager {
+        +static TrafficManager instance
+        -static final long SIGNAL_CHANGE_INTERVAL
+        +static ArrayList<TrafficNode> trafficLights
+        -static final ScheduledExecutorService scheduler
+        -static long nextSignalChangeTime
+        
+        +TrafficManager()
+        +static getInstance() TrafficManager
+        +addTrafficNode(TrafficNode node) void
+        +updateSignals() void
+        +canMoveToPosition(EV ev, int targetX, int targetY) boolean
+        +startTrafficCycle() void
+        +static changeSignals() void
+        +shutdown() void
+    }
+
+    class TrafficNode {
+        -int signal
+        +int group
+        +TrafficNode(int x, int y, String type, int trafficType)
+        +changeSignal()
+        +isGreen()
+        +isRed()
+        +get_pair(TrafficNode currentNode)
+    }
+
+    class Node {
+        +int x
+        +int y
+        -boolean stalled
+        +List<Node> neighbors
+        +String type
+        
+        +Node(int x, int y, String type)
+        +isStalled() boolean
+        +setStalled(boolean stalled) void
+        +equals(Object o) boolean
+        +hashCode() int
+        +toString() String
+    }
+
+    class Task {
+        -int start_x
+        -int start_y
+        -int end_x
+        -int end_y
+        -string task
+        
+        +Task(string task, int start_x, int start_y, int end_x, int end_y)
+        +getTask() string
+        +getStartX() int
+        +getStartY() int
+        +getEndX() int
+        +getEndY() int
+    }
+
+    class PathController {
+        -final GameMap gameMap
+        -final PathfindingVisualizer pathfinder
+        
+        +PathController()
+        +findPath(PathRequest request) List
+        -convertToPathNodes(long[] path) List
+        +getMapData() MapData
+    }
+
+    class PathfindingVisualizer {
+        -static boolean libraryLoaded
+        -GameMap map
+        
+        -native findPathInNetwork(int startX, int startY, int endX, int endY, int[][] nodeCoords, int[][] neighborLists) long[]
+        +PathfindingVisualizer(GameMap map)
+        +runPathfindingSimulation() void
+        +findPath(int startX, int startY, int endX, int endY) long[]
+        -visualizePath(long[] path) void
+    }
+
+    class PathNode {
+        -int x
+        -int y
+        +getX()
+        +getY()
+    }
+
+    class RoadMapParser {
+        -Map<String, Node> nodes
+        -int rows
+        -int cols
+        
+        +RoadMapParser()
+        +getRows() int
+        +getCols() int
+        +parseCSV(String filePath, String signalMapPath) void
+        -parseCoordinates(String cellValue) List
+        -getOrCreateNode(int x, int y, String type, int trafficType) Node
+        +printGraph() void
+        +getNode(int x, int y) Node
+        +getTrafficNode(int x, int y) TrafficNode
+        +getAllNodes() Collection
+        +pathExists(Node start, Node end) boolean
+        -dfs(Node current, Node end, Set<Node> visited) boolean
+        +findReachableNodes(Node start) Set
+        -dfsReachable(Node current, Set<Node> visited) void
+        +totalNodes() int
+        +main(String[] args) void
+    }
+
+
+    class TerminalSimulation {
+        -static final String ANSI_RED
+        -static final String ANSI_GREEN
+        -static final String ANSI_BLUE
+        -static final String ANSI_RESET
+        -GameMap gameMap
+        -TrafficManager trafficManager
+        -EVController evController
+        -volatile boolean running
+        
+        +TerminalSimulation()
+        +start() void
+        -startEV(String evName) void
+        -convertToPathNodes(long[] path) List
+        -simulateEVMovement(String evName) void
+        -printMap() void
+        -clearScreen() void
+        +main(String[] args) void
+    }
+
+    class TaskAssigner {
+        -static TaskAssigner instance
+        +static Queue<Task> buffer
+        
+        +TaskAssigner()
+        +static getInstance() TaskAssigner
+        +addTask(String string_task, int start_x, int end_x, int start_y, int end_y, Map<String, EV> evMap) void
+        +static assignTask() Task
+        +static giveTask(Map<String, EV> evMap) void
+    }
+    
+    class Main {
+        +main(String[] args) void
+    }
+
+    class EVCreateRequest {
+        -String name
+        -int startX
+        -int startY
+        -int endX
+        -int endY
+        -int type
+        -int charge
+        -int chargingRate
+        
+        +getName() String
+        +getStartX() int
+        +getStartY() int
+        +getEndX() int
+        +getEndY() int
+        +getType() int
+        +getCharge() int
+        +getChargingRate() int
+    }
+
+    class EVStatus {
+        -int charge
+        -int currentX
+        -int currentY
+        
+        +EVStatus(int charge, int currentX, int currentY)
+    }
+
+    class TrafficSignalState {
+        +int x
+        +int y
+        +boolean isGreen
+        
+        +TrafficSignalState(int x, int y, boolean isGreen)
+    }
+
+    class PathNode {
+        -int x
+        -int y
+        
+        +PathNode(int x, int y)
+        +getX() int
+        +getY() int
+    }
+
+    class PathRequest {
+        -int startX
+        -int startY
+        -int endX
+        -int endY
+        
+        +getStartX() int
+        +getStartY() int
+        +getEndX() int
+        +getEndY() int
+        +setStartX(int startX) void
+        +setStartY(int startY) void
+        +setEndX(int endX) void
+        +setEndY(int endY) void
+    }
+
+    class RoadNode {
+        -int x
+        -int y
+        -boolean oneWay
+        
+        +RoadNode(int x, int y, boolean oneWay)
+        +getX() int
+        +getY() int
+        +isOneWay() boolean
+    }
+
+    class SevenApplication {
+        +static main(String[] args) void
+    }
+
+    class MapData {
+        -List<RoadNode> roads
+        
+        +MapData(Map<String, Node> roadNetwork)
+        +getRoads() List<RoadNode>
+    }
+
+    EV o-- Task : has
+    EV o-- PathNode : contains >
+    EV ..> TaskAssigner : uses
+    EV *-- "1" Queue : contains taskQueue
+    EVController *-- "many" EV : manages
+    EVController o-- PathfindingVisualizer : uses
+    EVController o-- TrafficManager : uses
+    EVController ..> PathNode : creates
+    EVController ..> EVStatus : creates
+    EVController ..> EVCreateRequest : uses
+    EVController ..> TrafficSignalState : creates
+    GameMap *-- "many" Node : contains
+    GameMap o-- RoadMapParser : uses
+    GameMap ..> TrafficNode : creates
+    Node <|-- TrafficNode : extends
+    Node *-- "many" Node : neighbors
+    PathController o-- GameMap : uses
+    PathController o-- PathfindingVisualizer : uses
+    PathController ..> PathRequest : uses
+    PathController ..> PathNode : creates
+    PathController ..> MapData : creates
+    PathfindingVisualizer o-- GameMap : uses
+    PathfindingVisualizer ..> Node : uses
+    PathfindingVisualizer ..> PathNode : creates
+    RoadMapParser *-- "many" Node : contains
+    RoadMapParser ..> TrafficNode : creates
+    RoadMapParser ..> TrafficManager : uses
+    Task --o EV : assigned to
+    TaskAssigner *-- "many" Task : manages
+    TaskAssigner ..> EV : assigns tasks to
+    TerminalSimulation o-- GameMap : uses
+    TerminalSimulation o-- TrafficManager : uses
+    TerminalSimulation o-- EVController : uses
+    TerminalSimulation ..> PathNode : creates
+    TerminalSimulation ..> EV : manages
+    TrafficNode ..> GameMap : uses
+    TrafficManager *-- "many" TrafficNode : manages
+    TrafficManager o-- GameMap : uses
+    TrafficManager ..> EV : controls movement
+  ```
 
 ## 🔧 System Prerequisites
 
