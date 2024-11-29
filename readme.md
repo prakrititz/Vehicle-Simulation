@@ -87,7 +87,22 @@ mvn clean install
 # Run the application
 mvn spring-boot:run
 ```
+### Running on Docker
+```bash
+# Build the Docker Image
+# Run the following command to build your Docker image:
 
+docker build -t vehicle-simulator .
+
+# Run the Docker Container
+# Run your application in a Docker container:
+
+docker run -p 8080:8080 vehicle-simulator
+
+# This maps port 8080 of your application to port 8080 of your host machine.
+
+# Visit http://localhost:8080 in your browser
+```
 ## 📈 Performance Metrics
 - **Simulation Accuracy**: 95% traffic flow prediction
 - **Real-time Processing**: Sub-millisecond computational latency
