@@ -116,8 +116,6 @@ https://github.com/user-attachments/assets/073c12e7-d422-4156-b8f0-c6dda302b788
 ## 🤝 Contributing
 Contributions are welcome! Please read our contributing guidelines and code of conduct.
 
-## 📄 License
-[Specify your project's license]
 
 ## 🏆 Acknowledgments
 - Dijkstra Algorithm Implementation
