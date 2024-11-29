@@ -1,14 +1,20 @@
-# Use an OpenJDK base image
-FROM openjdk:17-jdk-slim
+# Use Java 23 JRE as the base image
+FROM eclipse-temurin:23-jre-alpine
 
-# Set a working directory inside the container
+# Set working directory
 WORKDIR /app
 
-# Copy the JAR file to the container
-COPY target/seven-0.0.1-SNAPSHOT.jar app.jar
+# Copy the compiled JAR file
+COPY target/*.jar app.jar
 
-# Expose the application's port
+# Copy the native DLL library
+COPY src/main/resources/lib/dijkstra_jni.dll /app/libs/
+
+# Set the Java library path to include the DLL location
+ENV LD_LIBRARY_PATH=/app/libs
+
+# Expose the application port
 EXPOSE 8080
 
-# Run the application
-ENTRYPOINT ["java", "-jar", "app.jar"]
+# Run the Spring Boot application
+ENTRYPOINT ["java", "-Djava.library.path=/app/libs", "-jar", "app.jar"]
