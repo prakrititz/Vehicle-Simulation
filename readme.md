@@ -57,7 +57,7 @@ The simulation leverages a sophisticated computational model that combines:
 - Edit existing maps, or make new ones! 
 
 ### Diagrams
-```mermaidjs
+```mermaid
 classDiagram
     class GameMap {
         -static GameMap instance
