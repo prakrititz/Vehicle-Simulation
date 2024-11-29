@@ -435,15 +435,17 @@ The project uses a JNI (Java Native Interface) approach with a C++ Dijkstra impl
 
 ### Quick Start
 ```bash
-# Clone the repository
-git clone https://github.com/yourusername/smart-vehicle-simulation.git
-cd smart-vehicle-simulation
-
-# Build the project
-mvn clean install
-
-# Run the application
-mvn spring-boot:run
+ # Clone the repository
+ git clone https://github.com/prakrititz/Vehicle-Simulation.git
+ cd Vehicle-Simulation
+ ## Method 1. Build
+ # Build the project
+ mvn clean install
+ # Run the application
+ mvn spring-boot:run
+ ## Method 2. Or run the .jar file after adding dll to the path
+ mvn clean package                                                                 
+java -jar ./target/seven-0.0.1-SNAPSHOT.jar    
 ```
 ### Running on Docker
 ```bash
