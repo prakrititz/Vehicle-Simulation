@@ -50,6 +50,13 @@ The simulation leverages a sophisticated computational model that combines:
 - Real-time state machine for traffic signals
 - Energy consumption and charging dynamics simulation
 
+### Custom Map Editor in Python
+- ![image](https://github.com/user-attachments/assets/60179062-bfcc-4ae6-bc14-38354f01dc4c)
+- The traffic system works with any kind of map made in this editor.
+- Eases the process of creating customized maps
+- Edit existing maps, or make new ones! 
+
+
 ## 🔧 System Prerequisites
 
 ### Hardware and Software Requirements
