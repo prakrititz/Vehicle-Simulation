@@ -50,6 +50,13 @@ The simulation leverages a sophisticated computational model that combines:
 - Real-time state machine for traffic signals
 - Energy consumption and charging dynamics simulation
 
+### Custom Map Editor in Python
+- ![image](https://github.com/user-attachments/assets/60179062-bfcc-4ae6-bc14-38354f01dc4c)
+- The traffic system works with any kind of map made in this editor.
+- Eases the process of creating customized maps
+- Edit existing maps, or make new ones! 
+
+
 ## 🔧 System Prerequisites
 
 ### Hardware and Software Requirements
@@ -87,22 +94,31 @@ mvn clean install
 # Run the application
 mvn spring-boot:run
 ```
+### Running on Docker
+```bash
+# Build the Docker Image
+# Run the following command to build your Docker image:
 
+docker build -t vehicle-simulator .
+
+# Run the Docker Container
+# Run your application in a Docker container:
+
+docker run -p 8080:8080 vehicle-simulator
+
+# This maps port 8080 of your application to port 8080 of your host machine.
+
+# Visit http://localhost:8080 in your browser
+```
 ## 📈 Performance Metrics
 - **Simulation Accuracy**: 95% traffic flow prediction
 - **Real-time Processing**: Sub-millisecond computational latency
 - **Scalability**: Supports up to 1000 concurrent vehicle simulations
 
 
-
-https://github.com/user-attachments/assets/073c12e7-d422-4156-b8f0-c6dda302b788
-
-
 ## 🤝 Contributing
 Contributions are welcome! Please read our contributing guidelines and code of conduct.
 
-## 📄 License
-[Specify your project's license]
 
 ## 🏆 Acknowledgments
 - Dijkstra Algorithm Implementation
