@@ -357,8 +357,6 @@ function animateMovement(ev, nextPosition) {
 - All tests must pass for BUILD SUCCESS
 
 ## Expected Test Output
-### Successful Test Run
-
 ```text
 [INFO] -------------------------------------------------------
 [INFO]  T E S T S
@@ -373,6 +371,8 @@ Tests run: 12, Failures: 0, Errors: 0, Skipped: 0
 [INFO] BUILD SUCCESS
 [INFO] ------------------------------------------------------------------------
 ```
+## Test Ouput
+![Testoutput](Test_results.png)
 
 ### What Each Passing Test Confirms
 
