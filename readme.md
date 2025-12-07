@@ -438,20 +438,15 @@ The project uses a JNI (Java Native Interface) approach with a C++ Dijkstra impl
 1. **Open Environment Variables**
    - In the System Properties window, click the "Environment Variables..." button at the bottom
 
-   ![Step 3: Environment Variables Button](Screenshot 2025-12-07 160424.png)
-
 2. **Edit PATH Variable**
    - Under "User variables" or "System variables", find and select the variable named `PATH`
    - Click "Edit..."
-
-   ![Step 4: Select PATH](Screenshot 2025-12-07 160402.png)
 
 3. **Add DLL Directory to PATH**
    - Click "New" to add a new entry
    - Enter the full path to your DLL directory: `C:\path\to\Vehicle-Simulation\lib`
    - Replace `C:\path\to\` with your actual project path (e.g., `C:\Users\<username>\Desktop\Vehicle-Simulation\lib`)
 
-   ![Step 5: Add New PATH Entry](Screenshot 2025-12-07 160333.png)
 
 4. **Apply Changes**
    - Click "OK" on all open dialogs to save changes
