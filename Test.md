@@ -40,7 +40,7 @@ The `TerminalSimulation.java` class provides a **console-based visualization** o
 
 4. **Terminal Output Example**
 === Traffic Map ===
-
+```text
 1 [ ][ ][ ][T][ ][ ]
 2 [ ][ ][ ][ ][ ][ ][ ][ ]
 3 [ ][T][ ][ ][ ][ ]
@@ -49,8 +49,7 @@ The `TerminalSimulation.java` class provides a **console-based visualization** o
 35 [ ][ ][2][ ][ ][ ][ ][ ]
 
 EV 1 position: 4,35 EV 2 position: 2,35
-
----
+```
 
 ## Test Coverage Analysis
 
@@ -270,6 +269,17 @@ EV 1 position: 4,35 EV 2 position: 2,35
 
 **Visual Characteristics**:
 
+=== Traffic Map ===
+```text
+1 [ ][ ][ ][T][ ][ ][ ]
+2 [ ][ ][ ][ ][ ][ ][ ][ ]
+3 [ ][T][ ][ ][ ][ ]
+4 [1][ ][ ][ ][ ][ ][ ][ ]
+...
+35 [ ][ ][2][ ][ ][ ][ ][ ]
+
+EV 1 position: 4,35 EV 2 position: 2,35
+```
 **Features**:
 - Text-based grid display
 - ANSI color codes for visualization
@@ -327,27 +337,29 @@ function animateMovement(ev, nextPosition) {
  // Smooth transition from current to next position
  // Update every 500ms to match backend movement
 }
+```
+## Test Execution Flow
 
-Test Execution Flow
-Setup Phase (@BeforeEach)
-Initialize GameMap singleton
-Initialize TrafficManager singleton
-Clear EVController.evMap to ensure clean state
-Prepare fresh test environment for each test
-Execution Phase
-Each test runs independently
-No dependencies between tests
-Tests can run in parallel (Spring Boot handles context)
-Validation Phase
-Assertions verify expected behavior
-Failures provide detailed error messages
-All tests must pass for BUILD SUCCESS
+### Setup Phase (`@BeforeEach`)
+1. Initialize GameMap singleton
+2. Initialize TrafficManager singleton
+3. Clear `EVController.evMap` to ensure clean state
+4. Prepare fresh test environment for each test
 
+### Execution Phase
+- Each test runs independently
+- No dependencies between tests
+- Tests can run in parallel (Spring Boot handles context)
 
+### Validation Phase
+- Assertions verify expected behavior
+- Failures provide detailed error messages
+- All tests must pass for BUILD SUCCESS
 
-Expected Test Output
-Successful Test Run
+## Expected Test Output
+### Successful Test Run
 
+```text
 [INFO] -------------------------------------------------------
 [INFO]  T E S T S
 [INFO] -------------------------------------------------------
@@ -360,44 +372,47 @@ Tests run: 12, Failures: 0, Errors: 0, Skipped: 0
 [INFO] ------------------------------------------------------------------------
 [INFO] BUILD SUCCESS
 [INFO] ------------------------------------------------------------------------
+```
 
+### What Each Passing Test Confirms
 
-What Each Passing Test Confirms
-Test	Terminal Capability	Frontend Functionality
-testGameMapInitialization()	Map can be rendered	Map data API works
-testTrafficManagerInitialization()	Traffic lights displayed	Traffic API works
-testEVCreationAndConfiguration()	Vehicle appears on map	Create vehicle API works
-testMultipleEVCreation()	Multiple vehicles shown	Vehicle list API works
-testPathfindingVisualizerCreation()	Pathfinding enabled	Pathfinding API ready
-testPathGeneration()	Routes calculable	Path data available
-testConvertToPathNodes()	Movement coordinates valid	Path format correct
-testEVPathSetting()	Route assigned to vehicle	Full route displayable
-testEVMovingState()	Start/stop works	Animation controllable
-testMapWalkability()	Roads exist	Map navigable
-testTrafficNodeRetrieval()	Signals locatable	Traffic icons positioned
-testEVMapOperations()	CRUD operations work	Vehicle management works
+| Test | Terminal Capability | Frontend Functionality |
+| :--- | :--- | :--- |
+| `testGameMapInitialization()` | Map can be rendered | Map data API works |
+| `testTrafficManagerInitialization()` | Traffic lights displayed | Traffic API works |
+| `testEVCreationAndConfiguration()` | Vehicle appears on map | Create vehicle API works |
+| `testMultipleEVCreation()` | Multiple vehicles shown | Vehicle list API works |
+| `testPathfindingVisualizerCreation()` | Pathfinding enabled | Pathfinding API ready |
+| `testPathGeneration()` | Routes calculable | Path data available |
+| `testConvertToPathNodes()` | Movement coordinates valid | Path format correct |
+| `testEVPathSetting()` | Route assigned to vehicle | Full route displayable |
+| `testEVMovingState()` | Start/stop works | Animation controllable |
+| `testMapWalkability()` | Roads exist | Map navigable |
+| `testTrafficNodeRetrieval()` | Signals locatable | Traffic icons positioned |
+| `testEVMapOperations()` | CRUD operations work | Vehicle management works |
 
+## Integration with Frontend
 
-Integration with Frontend
-API Endpoints Validated by Tests
-Map Data: GET /api/map
+### API Endpoints Validated by Tests
 
-Validated by: testGameMapInitialization(), testMapWalkability()
-Vehicle Management:
+1. **Map Data:** `GET /api/map`
+   * Validated by: `testGameMapInitialization()`, `testMapWalkability()`
 
-POST /api/ev/new → Validated by testEVCreationAndConfiguration()
-GET /api/ev/all → Validated by testMultipleEVCreation()
-DELETE /api/ev/{name} → Validated by testEVMapOperations()
-Pathfinding: POST /api/findPath
+2. **Vehicle Management:**
+   * `POST /api/ev/new` → Validated by `testEVCreationAndConfiguration()`
+   * `GET /api/ev/all` → Validated by `testMultipleEVCreation()`
+   * `DELETE /api/ev/{name}` → Validated by `testEVMapOperations()`
 
-Validated by: testPathGeneration(), testConvertToPathNodes()
-Traffic Control:
+3. **Pathfinding:** `POST /api/findPath`
+   * Validated by: `testPathGeneration()`, `testConvertToPathNodes()`
 
-GET /api/ev/traffic/signals → Validated by testTrafficNodeRetrieval()
-POST /api/ev/traffic/change → Validated by testTrafficManagerInitialization()
+4. **Traffic Control:**
+   * `GET /api/ev/traffic/signals` → Validated by `testTrafficNodeRetrieval()`
+   * `POST /api/ev/traffic/change` → Validated by `testTrafficManagerInitialization()`
 
+### Frontend Data Structure Example
 
-Frontend Data Structure Example
+```xml
 {
   "vehicle": {
     "name": "EV1",
@@ -416,19 +431,24 @@ Frontend Data Structure Example
     ]
   }
 }
+```
 
-Conclusion
-The TerminalSimulationTest suite comprehensively validates the entire vehicle simulation system without requiring manual terminal interaction. All tests passing ensures:
+### Conclusion
 
-✅ Terminal Simulation would run correctly with proper vehicle movement and display
-✅ Frontend Web Interface receives valid data from all API endpoints
-✅ Vehicle Management (create, track, delete) functions properly
-✅ Pathfinding generates navigable routes
-✅ Traffic Management controls signal states
-✅ Real-time Updates can be implemented safely
+The `TerminalSimulationTest` suite comprehensively validates the entire vehicle simulation system without requiring manual terminal interaction. All tests passing ensures:
+
+* ✅ **Terminal Simulation** would run correctly with proper vehicle movement and display
+* ✅ **Frontend Web Interface** receives valid data from all API endpoints
+* ✅ **Vehicle Management** (create, track, delete) functions properly
+* ✅ **Pathfinding** generates navigable routes
+* ✅ **Traffic Management** controls signal states
+* ✅ **Real-time Updates** can be implemented safely
 
 BUILD SUCCESS indicates the simulation backend is production-ready for both terminal and web-based visualization.
 
+### Running the Tests
+
+```bash
 # Run all tests
 mvn clean test
 
@@ -440,10 +460,6 @@ mvn test -Dtest=TerminalSimulationTest
 
 # Run with detailed output
 mvn test -X
-
-Document Version: 1.0
-Last Updated: December 7, 2025
-Test Framework: JUnit 5 + Spring Boot Test
-Project: Vehicle Simulation System
+```
 
 This report provides a comprehensive analysis of what each test validates, how it relates to the terminal simulation, and what it means for the frontend interface.This report provides a comprehensive analysis of what each test validates, how it relates to the terminal simulation, and what it means for the frontend interface.
