@@ -417,18 +417,75 @@ classDiagram
 - Operating System: Windows, macOS, or Linux
 
 ### Native Library Configuration
-The project uses a JNI (Java Native Interface) approach with a C++ Dijkstra implementation:
+The project uses a JNI (Java Native Interface) approach with a C++ Dijkstra implementation. The `dijkstra_jni.dll` is essential for the pathfinding algorithm to work correctly.
 
-#### Windows Configuration
-1. Locate `dijkstra_jni.dll` in `Vehicle-Simulation/lib`
-2. Add the DLL directory to system PATH
-   - Open System Properties > Advanced > Environment Variables
-   - Append DLL directory path to PATH variable
+#### Windows Configuration (Detailed Step-by-Step)
+
+**Step 1: Locate the DLL file**
+- Navigate to your project root directory: `Vehicle-Simulation/`
+- Look for the `lib/` folder (or ensure `dijkstra_jni.dll` is in this location)
+- The full path should be: `C:\path\to\Vehicle-Simulation\lib\dijkstra_jni.dll`
+
+**Step 2: Copy the DLL file**
+- Copy `dijkstra_jni.dll` from the `lib/` folder
+- Paste it into one of these locations:
+  - **Option A (Recommended)**: `C:\Windows\System32\` (requires admin privileges)
+  - **Option B**: Project root directory `Vehicle-Simulation/` 
+  - **Option C**: Any directory already in your system PATH
+
+**Step 3: Add to System PATH (Most Reliable Method)**
+
+1. **Open Environment Variables**
+   - In the System Properties window, click the "Environment Variables..." button at the bottom
+
+   ![Step 3: Environment Variables Button](C:\Users\gupta\OneDrive - iiit-b\Desktop\WSL\Vehicle-Simulation\Screenshot 2025-12-07 160424.png)
+
+2. **Edit PATH Variable**
+   - Under "User variables" or "System variables", find and select the variable named `PATH`
+   - Click "Edit..."
+
+   ![Step 4: Select PATH](C:\Users\gupta\OneDrive - iiit-b\Desktop\WSL\Vehicle-Simulation\Screenshot 2025-12-07 160402.png)
+
+3. **Add DLL Directory to PATH**
+   - Click "New" to add a new entry
+   - Enter the full path to your DLL directory: `C:\path\to\Vehicle-Simulation\lib`
+   - Replace with your actual project path (e.g., `C:\Users\gupta\OneDrive - iiit-b\Desktop\WSL\Vehicle-Simulation\lib`)
+
+   ![Step 5: Add New PATH Entry](C:\Users\gupta\OneDrive - iiit-b\Desktop\WSL\Vehicle-Simulation\Screenshot 2025-12-07 160333.png)
+
+4. **Apply Changes**
+   - Click "OK" on all open dialogs to save changes
+   - Close and restart any open Command Prompt or IDE windows for changes to take effect
+
+
+**Step 4: Verify the Configuration**
+- Open Command Prompt and run:
+  ```cmd
+  echo %PATH%
+  ```
+- Verify that your DLL directory path appears in the output
+- If not, repeat the steps above and restart your terminal
+
+**Alternative: Set PATH in Java Runtime**
+If the above method doesn't work, you can also set the library path when running the application:
+```bash
+mvn spring-boot:run -Djava.library.path=C:\path\to\Vehicle-Simulation\lib
+```
+
+Or when running the JAR file:
+```bash
+java -Djava.library.path=C:\path\to\Vehicle-Simulation\lib -jar target/seven-0.0.1-SNAPSHOT.jar
+```
 
 #### Linux/Mac Configuration
-1. Set `LD_LIBRARY_PATH`:
+1. Locate the compiled `.so` (Linux) or `.dylib` (Mac) file
+2. Set `LD_LIBRARY_PATH`:
    ```bash
    export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/path/to/native/lib
+   ```
+3. Or run with the library path flag:
+   ```bash
+   mvn spring-boot:run -Djava.library.path=/path/to/native/lib
    ```
 
 ## 🛠 Installation and Deployment
