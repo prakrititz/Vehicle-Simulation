@@ -8,7 +8,7 @@ WORKDIR /app
 COPY target/*.jar app.jar
 
 # Copy the native DLL library
-COPY src/main/resources/lib/dijkstra_jni.dll /app/libs/
+COPY dijkstra_jni.dll /app/libs/
 
 # Set the Java library path to include the DLL location
 ENV LD_LIBRARY_PATH=/app/libs
